@@ -3,6 +3,7 @@ description = "Spring Debug"
 apply plugin: "kotlin"
 
 dependencies {
+    implementation 'mysql:mysql-connector-java:8.0.29'
     compile(project(":spring-core"))
     optional(project(":spring-aop"))
     optional(project(":spring-beans"))

@@ -235,13 +235,6 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	}
 
 	@Override
-	public Object getEarlyBeanReference(Object bean, String beanName) {
-		Object cacheKey = getCacheKey(bean.getClass(), beanName);
-		this.earlyProxyReferences.put(cacheKey, bean);
-		return wrapIfNecessary(bean, beanName, cacheKey);
-	}
-
-	@Override
 	public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) {
 		Object cacheKey = getCacheKey(beanClass, beanName);
 
@@ -296,11 +289,20 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	public Object postProcessAfterInitialization(@Nullable Object bean, String beanName) {
 		if (bean != null) {
 			Object cacheKey = getCacheKey(bean.getClass(), beanName);
+			//如果此处的bean不等于getEarlyBeanReference执行的bean 才会执行创建代理类的方法
+			//否则 会重复执行创建代理类的方法
 			if (this.earlyProxyReferences.remove(cacheKey) != bean) {
 				return wrapIfNecessary(bean, beanName, cacheKey);
 			}
 		}
 		return bean;
+	}
+
+	@Override
+	public Object getEarlyBeanReference(Object bean, String beanName) {
+		Object cacheKey = getCacheKey(bean.getClass(), beanName);
+		this.earlyProxyReferences.put(cacheKey, bean);
+		return wrapIfNecessary(bean, beanName, cacheKey);
 	}
 
 
